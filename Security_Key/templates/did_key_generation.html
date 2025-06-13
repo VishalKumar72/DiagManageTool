@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>DID Key</title></head>
+<body>
+<h2>DID Key Generation</h2>
+<form method="post">
+    <input type="submit" name="generate" value="Generate New Key">
+</form>
+<p>{{ message }}</p>
+<p><a href="{{ url_for('did_key_generation') }}">View Existing Keys</a></p>
+<a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+</body>
+</html>

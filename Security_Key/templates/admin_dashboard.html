@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TVS Motor Company - Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* Global Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: #ADD8E6; /* Light Blue Background matching dashboard */
+      color: #003366; /* Dark blue text */
+      animation: fadeIn 1.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    /* Top Bar */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #87CEFA; /* Sky blue topbar */
+      padding: 15px 30px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .topbar-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo img {
+      width: 200px;
+      height: auto;
+    }
+    .logo h1 {
+      font-size: 24px;
+      color: #003366; /* Dark blue to match dashboard */
+    }
+    .topbar-section a,
+    .topbar-section span {
+      color: #003366;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+    .topbar-section a:hover {
+      color: #a3f3aa;
+    }
+    .admin-btn, .logout-btn {
+      background-color: #e6eaed;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+    .admin-btn:hover, .logout-btn:hover {
+      background-color: #002244;
+    }
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+    /* Section Styles */
+    section {
+      background: #ffffff; /* White section background matching dashboard tiles */
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      animation: fadeIn 1s ease-in;
+    }
+    h2 {
+      font-weight: 600;
+      color: #003366;
+      border-bottom: 2px solid #0077b6;
+      padding-bottom: 8px;
+      margin-bottom: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #003366;
+    }
+    thead {
+      background-color: #003366;
+      color: #fff;
+    }
+    thead th {
+      padding: 12px 15px;
+      font-weight: 700;
+      text-align: left;
+      border-bottom: 3px solid #0077b6;
+    }
+    .table-wrapper {
+      max-height: 60vh;
+      overflow-y: auto;
+      border-radius: 8px;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.2);
+    }
+    tbody tr {
+      border-bottom: 1px solid #ccc;
+      transition: background-color 0.25s ease;
+    }
+    tbody tr:hover {
+      background-color: #f0f0f0;
+    }
+    tbody td {
+      padding: 10px 15px;
+      vertical-align: middle;
+    }
+    .download-btn {
+      display: inline-block;
+      padding: 12px 30px;
+      background: linear-gradient(45deg, #003366, #003366);
+      color: #fff;
+      font-weight: bold;
+      border-radius: 10px;
+      text-decoration: none;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 15px;
+    }
+    .download-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+    }
+    .edit-link a {
+      color: #0077b6;
+      font-weight: 700;
+      text-decoration: none;
+      transition: color 0.25s ease;
+    }
+    .edit-link a:hover {
+      color: #003366;
+    }
+    button.delete-btn {
+      background: #6c757d;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button.delete-btn:hover {
+      background-color: #6c757d;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 900px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+        width: 100%;
+      }
+      thead tr {
+        display: none;
+      }
+      tbody tr {
+        margin-bottom: 20px;
+        border-bottom: 2px solid #444;
+      }
+      tbody td {
+        padding-left: 50%;
+        position: relative;
+        text-align: left;
+      }
+      tbody td::before {
+        position: absolute;
+        top: 10px;
+        left: 15px;
+        width: 45%;
+        white-space: nowrap;
+        font-weight: 700;
+        color: #e50914;
+        content: attr(data-label);
+      }
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .topbar-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+    }
+     .modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 2000; /* Above other elements */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+    padding-top: 60px;
+  }
+  /* Modal content box */
+  .modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 8px;
+  }
+  /* Close button */
+  .modal-content .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .modal-content .close:hover,
+  .modal-content .close:focus {
+    color: black;
+  }
+  /* Truncate description box */
+  .desc-box {
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+  }
+
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-section left">
+      <div class="logo">
+        <img src="https://tvsdaksha.com/images/tvs_logo.jpg" alt="TVS Icon" />
+      </div>
+      <a href="/dashboard">🏠 Home</a>
+    </div>
+    <div class="topbar-section center">
+      <h1>🔐 Admin Dashboard</h1>
+    </div>
+    <div class="topbar-section right">
+      {% if session['is_admin'] %}
+      <a href="{{ url_for('admin_dashboard') }}" class="admin-btn">Admin</a>
+      {% endif %}
+      <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+    </div>
+  </div>
+  <div class="container">
+    <!-- Registered Users Section -->
+    <section class="users-section section">
+      <h2>Registered Users</h2>
+      {% if users %}
+      <table border="1" cellspacing="0" cellpadding="5">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Created At</th>
+            <th>Admin</th>
+            <th>Actions</th>
+            <th>Password</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr>
+            <td>{{ user[0] }}</td>
+            <td>{{ user[1] }}</td>
+            <td>{{ user[2] }}</td>
+            <td>{{ 'Yes' if user[3] else 'No' }}</td>
+            <td>
+              {% if not user[3] %}
+                <form action="{{ url_for('make_admin', user_id=user[0]) }}" method="post" style="display:inline;">
+                  <button type="submit">Make Admin</button>
+                </form>
+              {% else %}
+                <form action="{{ url_for('remove_admin', user_id=user[0]) }}" method="post" style="display:inline;">
+                  <button type="submit">Revoke Admin</button>
+                </form>
+              {% endif %}
+            </td>
+            <td style="word-break: break-all;">{{ user[4] }}</td> 
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>No registered users found.</p>
+      {% endif %}
+    </section>
+   
+
+    <!-- Generated Security Keys Section -->
+    <section class="keys-section section">
+      <h2>Generated Security Keys</h2>
+      <a href="{{ url_for('download_keys') }}" class="download-btn">⬇️ Download Keys</a>
+      {% if keys %}
+      <div class="table-wrapper keys-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Project</th>
+              <th>ECU</th>
+              <th>Email</th>
+              <th>SW Part</th>
+              <th>Fixed Code</th>
+              <th>Private Key</th>
+              <th>Generated At</th>
+              <th>Edit</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for key in keys %}
+            <tr>
+              <td data-label="ID">{{ key[0] }}</td>
+              <td data-label="Project">{{ key[1] }}</td>
+              <td data-label="ECU">{{ key[2] }}</td>
+              <td data-label="Email">{{ key[3] }}</td>
+              <td data-label="SW Part">{{ key[4] }}</td>
+              <td data-label="Fixed Code">{{ key[5] }}</td>
+              <td data-label="Private Key">{{ key[6] }}</td>
+              <td data-label="Generated At">{{ key[7] }}</td>
+              <td data-label="Edit" class="edit-link">
+                <a href="{{ url_for('edit_key', key_id=key[0]) }}" title="Edit Key">✏️ Edit</a>
+              </td>
+              <td data-label="Delete">
+                <form action="{{ url_for('delete_key', key_id=key[0]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this key?');">
+                  <button type="submit" class="delete-btn">🗑️ Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>No generated keys found.</p>
+      {% endif %}
+    </section>
+    
+    <!-- Pending DID Requests Section -->
+    <section class="did-requests-section section">
+      <h2>Pending DID Requests</h2>
+      {% if did_requests %}
+      <div class="table-wrapper did-requests-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Requested By</th>
+              <th>Short Name</th>
+              <th>Description</th>
+              <th>Data Length</th>
+              <th>Data Format</th>
+              <th>Resolution</th>
+              <th>Identification</th>
+              <th>Requested At</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for req in did_requests %}
+            <tr>
+              <td data-label="ID">{{ req[0] }}</td>
+              <td data-label="Requested By">{{ req[1] }}</td>
+              <td data-label="Short Name">{{ req[2] }}</td>
+             <td data-label="Description">
+                <div class="desc-box" onclick="showDescription('{{ req[3]|e }}')">{{ req[3] }}</div>
+              </td>
+              <td data-label="Data Length">{{ req[4] }}</td>
+              <td data-label="Data Format">{{ req[5] }}</td>
+              <td data-label="Resolution">{{ req[6] }}</td>
+              <td data-label="Identification">{{ req[7] }}</td>
+              <td data-label="Requested At">{{ req[8] }}</td>
+              <td data-label="Action">
+                <form method="POST" action="{{ url_for('approve_did', request_id=req[0]) }}" style="display:inline;">
+                  <button type="submit" class="delete-btn" style="background: #28a745; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">Approve</button>
+                </form>
+                <form method="POST" action="{{ url_for('reject_did', request_id=req[0]) }}" style="display:inline; margin-left: 5px;">
+                  <button type="submit" class="delete-btn" style="background: #fd7e14; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">Reject</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>No pending DID requests found.</p>
+      {% endif %}
+    </section>
+    
+    <!-- Generated DIDs Section -->
+    <section class="dids-section section">
+      <h2>Generated DIDs</h2>
+      <a href="{{ url_for('download_dids') }}" class="download-btn">⬇️ Download DIDs</a>
+      {% if dids %}
+      <div class="table-wrapper dids-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>DID Value</th>
+              <th>Short Name</th>
+              <th>Description</th>
+              <th>Data Length</th>
+              <th>Data Format</th>
+              <th>Resolution</th>
+              <th>Identification</th>
+              <th>Created At</th>
+              <th>generated by</th>
+              <th>Edit</th>
+              <th>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for did in dids %}
+            <tr>
+              <td data-label="ID">{{ did[0] }}</td>
+              <td data-label="DID Value">{{ did[1] }}</td>
+              <td data-label="Short Name">{{ did[2] }}</td>
+              <!-- <td data-label="Description">{{ did[3] }}</td> -->
+               <td data-label="Description">
+                <div class="desc-box" onclick="showDescription(`{{ did[3]|e }}`)">
+                 {{ did[3][:30] }}{% if did[3]|length > 30 %}...{% endif %}
+                </div>
+               </td>
+              <td data-label="Data Length">{{ did[4] }}</td>
+              
+              <td data-label="Data Format">{{ did[5] }}</td>
+              <td data-label="Resolution">{{ did[6] }}</td>
+              <td data-label="Identification">{{ did[7] }}</td>
+              <td data-label="Created At">{{ did[8] }}</td>
+              <td data-label="Generated By">{{ did[9] }}</td>
+
+              <td data-label="Edit" class="edit-link">
+                <a href="{{ url_for('edit_did', did_id=did[0]) }}" title="Edit DID">✏️ Edit</a>
+              </td>
+              <td data-label="Delete">
+                <form method="POST" action="{{ url_for('delete_did', did_id=did[0]) }}" onsubmit="return confirm('Are you sure you want to delete this DID?');">
+                  <button type="submit" class="delete-btn">🗑️ Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>No DIDs found.</p>
+      {% endif %}
+    </section>
+    <!-- ...existing code... -->
+
+<!-- Modal for Description -->
+<div id="descModal" class="modal">
+  <div class="modal-content small-modal">
+    <span class="close" onclick="closeDescription()">&times;</span>
+    <h3 style="margin-top:0;">Full Description</h3>
+    <div id="descText" style="white-space:pre-wrap;word-break:break-word;"></div>
+  </div>
+</div>
+<script>
+function showDescription(text) {
+  document.getElementById('descText').innerText = text;
+  document.getElementById('descModal').style.display = "block";
+}
+function closeDescription() {
+  document.getElementById('descModal').style.display = "none";
+}
+window.onclick = function(event) {
+  var modal = document.getElementById('descModal');
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script>
+
+<style>
+/* ...existing styles... */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.3);
+  padding-top: 60px;
+}
+.modal-content.small-modal {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 18px 22px;
+  border: 1px solid #888;
+  width: 340px;
+  max-width: 90vw;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  position: relative;
+  text-align: left;
+}
+.modal-content .close {
+  color: #aaa;
+  float: right;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 10px;
+}
+.modal-content .close:hover,
+.modal-content .close:focus {
+  color: #003366;
+}
+</style>
+    
+  </div>
+</body>
+</html>

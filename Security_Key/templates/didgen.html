@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DID Search & Generation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* Global Styles */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background-color: #ADD8E6; /* Light blue background matching keygen */
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #003366;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* Topbar */
+    .topbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: #87CEFA; /* Sky blue topbar */
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 30px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo img {
+      width: 200px;
+      height: auto;
+    }
+    .logo h1 {
+      font-size: 24px;
+      color: #003366; /* Dark blue to match dashboard */
+    }
+    .topbar a {
+      text-decoration: none;
+      color: #003366;
+      font-weight: bold;
+      font-size: 15px;
+    }
+    .topbar a:hover {
+      color: #e50914;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .admin-btn {
+      background-color: #e6eaed;
+      color: #fff;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .logout-btn {
+      background-color: #f5f4f8;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* Main container */
+    .container {
+      max-width: 600px;
+      margin: 100px auto 30px auto;
+      background-color: #ffffff; /* White container */
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+    }
+    h2, h3 {
+      text-align: center;
+      color: #003366;
+      border-bottom: 2px solid #e50914;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    label {
+      font-weight: bold;
+      color: #003366;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+      color: #003366;
+      background-color: #f0f0f0;
+    }
+    .btn {
+      background-color: #040110;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #493b5e;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    th {
+      background-color: #003366;
+      color: #fff;
+    }
+    hr {
+      border: 1px solid #ccc;
+      margin: 30px 0;
+    }
+    .message {
+      text-align: center;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+    .success { background-color: #2ecc71; }
+    .error { background-color: #c0392b; }
+  </style>
+</head>
+<body>
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="logo">
+        <img src="https://tvsdaksha.com/images/tvs_logo.jpg" alt="TVS Icon" />
+      </div>
+      <a href="/dashboard">Home</a>
+    </div>
+    <div class="topbar-right">
+      {% if session['is_admin'] %}
+      <a href="{{ url_for('admin_dashboard') }}" class="admin-btn">Admin</a>
+      {% endif %}
+      <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Search Section -->
+    <h2>Search Existing DID</h2>
+    <form method="POST">
+      <input type="hidden" name="action" value="search">
+      <label for="search_short_name">Short Name:</label>
+      <input type="text" name="search_short_name" id="search_short_name" placeholder="Enter short name" required>
+      <button type="submit" class="btn">Search</button>
+    </form>
+
+    {% if search_results and search_results|length > 0 %}
+    <h3>Search Results</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>DID Value</th>
+          <th>Short Name</th>
+          <th>Description</th>
+          <th>Data Length</th>
+          <th>Data Format</th>
+          <th>Resolution</th>
+          <th>Identification</th>
+          <th>Created At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for did in search_results %}
+        <tr>
+          <td>{{ did[0] }}</td>
+          <td>{{ did[1] }}</td>
+          <td>{{ did[2] }}</td>
+          <td>{{ did[3] }}</td>
+          <td>{{ did[4] }}</td>
+          <td>{{ did[5] }}</td>
+          <td>{{ did[6] }}</td>
+          <td>{{ did[7] }}</td>
+          <td>{{ did[8] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    <hr>
+
+    <!-- Generation Section -->
+     {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+     {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+     {% endfor %}
+   {% endif %}
+ {% endwith %}
+    <h2>DID Request</h2>
+    <form method="POST">
+      <input type="hidden" name="action" value="generate">
+      <label for="short_name">Short Name:</label>
+      <input type="text" name="short_name" id="short_name" placeholder="Enter short name" required>
+      <label for="description">Description / Purpose:</label>
+      <textarea name="description" id="description" rows="3" placeholder="Enter description" required></textarea>
+      <label for="data_length">Length of the Data:</label>
+      <input type="number" name="data_length" id="data_length" min="1" placeholder="e.g., 8" required>
+      <label for="data_format">Data Format:</label>
+      <select name="data_format" id="data_format" required>
+        <option value="Hex">Hex</option>
+        <option value="ASCII">ASCII</option>
+        <option value="Decimal">Decimal</option>
+      </select>
+      <label for="resolution">Resolution / Scaling Factor:</label>
+      <input type="text" name="resolution" id="resolution" placeholder="Enter resolution" required>
+      <label class="checkbox-label">
+        <input type="checkbox" name="identification"> Is this an Identification DID?
+      </label>
+      <button type="submit" class="btn">Submit</button>
+    </form>
+    
+    
+    {% if message %}
+      <div class="message {{ status }}">{{ message }}</div>
+    {% endif %}
+    {% if generated_did %}
+      <div class="message success">Generated DID: {{ generated_did }}</div>
+    {% endif %}
+  </div>
+</body>
+</html>

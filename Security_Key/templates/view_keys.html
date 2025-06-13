@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>View Keys</title></head>
+<body>
+<h2>Stored Keys</h2>
+<table border="1">
+<tr><th>Key</th><th>Timestamp</th></tr>
+{% for row in keys %}
+<tr><td>{{ row.Key }}</td><td>{{ row.Timestamp }}</td></tr>
+{% endfor %}
+</table>
+<a href="{{ url_for('did_key') }}">Back</a>
+</body>
+</html>

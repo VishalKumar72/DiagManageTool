@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard</title>
+  <style>
+    /* Global Styles */
+    body {
+      margin: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: #ADD8E6; /* Light Blue Background */
+      color: #003366; /* Dark blue text */
+      animation: fadeIn 1.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    /* Top Bar */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      background-color: #87CEFA; /* Sky blue topbar */
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }.logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo img {
+      width: 200px;
+      height: auto;
+    }
+    .logo h1 {
+      font-size: 24px;
+      color: #003366; /* Dark blue to match dashboard */
+    }
+     
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .topbar-user {
+      font-size: 14px;
+      color: #003366;
+    }
+    .admin-btn, .logout-btn {
+      background-color:  #031522;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+       transition: background-color 0.3s ease;
+    }
+    .admin-btn:hover, .logout-btn:hover {
+      background-color: #002244;
+    }
+    /* Dashboard Title */
+    h2.dashboard-title {
+      text-align: center;
+      margin: 30px 0 20px;
+      font-weight: 700;
+      color: #003366;
+    }
+    /* Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      padding: 80px 200px;
+    }
+    .dashboard-tile {
+      background: linear-gradient(145deg, #B0E0E6, #A2D5F2);
+      color: #020f1d;
+      padding: 30px 20px;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    }
+    .dashboard-tile:hover {
+      transform: translateY(-5px);
+      background: linear-gradient(145deg, #A2D5F2, #B0E0E6);
+      box-shadow: 0 12px 20px rgba(0,0,0,0.25);
+    }
+    /* Icon Styling: More vibrant colors and hover effect */
+    .icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+      transition: transform 0.3s ease, text-shadow 0.3s ease;
+    }
+    .dashboard-tile:hover .icon {
+      transform: scale(1.1);
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+    /* Optionally, you might assign colors based on content */
+    .dashboard-tile:nth-child(1) .icon { color: #FF5733; }  /* Security Key */
+    .dashboard-tile:nth-child(2) .icon { color: #C70039; }  /* DID */
+    .dashboard-tile:nth-child(3) .icon { color: #900C3F; }  /* IOID */
+    .dashboard-tile:nth-child(4) .icon { color: #581845; }  /* RID */
+    .dashboard-tile:nth-child(5) .icon { color: #FFC300; }  /* DTC */
+    .dashboard-tile:nth-child(6) .icon { color: #FF5733; }  /* Flashing Sequences */
+    .dashboard-tile:nth-child(7) .icon { color: #C70039; }  /* Compliance Check */
+    .dashboard-tile:nth-child(8) .icon { color: #900C3F; }  /* Import Config */
+    .dashboard-tile:nth-child(9) .icon { color: #581845; }  /* Export Data */
+    
+    .label {
+      font-size: 20px;
+      font-weight: 500;
+    }
+    @media (max-width: 600px) {
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .topbar-search {
+        margin: 10px 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="topbar">
+     <div class="logo">
+        <img src="https://tvsdaksha.com/images/tvs_logo.jpg" alt="TVS Icon" />
+      </div>
+ 
+    <div class="topbar-right">
+      <span class="topbar-user">👤 {{ session['email'] }}</span>
+      {% if session['is_admin'] %}
+        <a href="{{ url_for('admin_dashboard') }}" class="admin-btn">Admin</a>
+      {% endif %}
+      <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+    </div>
+  </div>
+  
+  <h2 class="dashboard-title">Welcome to the TVSM Diagnostic Dashboard</h2>
+  
+  <div class="dashboard-grid">
+    <a href="{{ url_for('run_keygen') }}" style="text-decoration: none; color: inherit;">
+      <div class="dashboard-tile">
+        <div class="icon">🔐</div>
+        <div class="label">Security Key</div>
+      </div>
+    </a>
+    <a href="{{ url_for('did_generation') }}" style="text-decoration: none; color: inherit;">
+      <div class="dashboard-tile">
+        <div class="icon">📡</div>
+        <div class="label">DID</div>
+      </div>
+    </a>
+    <div class="dashboard-tile">
+      <div class="icon">🆔</div>
+      <div class="label">IOID</div>
+    </div>
+    <div class="dashboard-tile">
+      <div class="icon">📜</div>
+      <div class="label">RID</div>
+    </div>
+    <div class="dashboard-tile">
+      <div class="icon">⚠️</div>
+      <div class="label">DTC</div>
+    </div>
+    <div class="dashboard-tile">
+      <div class="icon">⚡</div>
+      <div class="label">Flashing Sequences</div>
+    </div>
+    <div class="dashboard-tile">
+      <div class="icon">✅</div>
+      <div class="label">Compliance Check</div>
+    </div>
+     <!-- Updated Import Config tile to link to import_data -->
+   <a href="{{ url_for('import_data') }}" style="text-decoration: none; color: inherit;">
+    <div class="dashboard-tile">
+      <div class="icon">⬇️</div>
+      <div class="label">Import Config</div>
+    </div>
+  </a>
+    <a href="{{ url_for('export_data') }}" style="text-decoration: none; color: inherit;">
+      <div class="dashboard-tile">
+        <div class="icon">⬆️</div>
+        <div class="label">Export Data</div>
+      </div>
+    </a>
+    <a href="{{ url_for('log_analyzer') }}" style="text-decoration: none; color: inherit;">
+  <div class="dashboard-tile">
+    <div class="icon">📊</div>
+    <div class="label">Log Analyzer</div>
+  </div>
+</a>
+  </div>
+</body>
+</html>

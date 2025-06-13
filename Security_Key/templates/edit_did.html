@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edit DID</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Global Styles */
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #ADD8E6; /* Light blue background similar to didgen */
+      color: #003366;
+      min-height: 100vh;
+    }
+    
+    /* Topbar styling */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #87CEFA; /* Sky blue topbar */
+      padding: 8px 30px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+    .topbar-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .logo-img {
+      height: 40px;
+      width: auto;
+    }
+    .home-btn,
+    .admin-btn,
+    .logout-btn {
+      background-color: #e6eaed;
+      color: #003366;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+    .home-btn:hover,
+    .admin-btn:hover,
+    .logout-btn:hover {
+      background-color: #d0dfe8;
+    }
+    
+    /* Main container */
+    .container {
+      max-width: 600px;
+      margin: 100px auto 30px auto;
+      background-color: #ffffff;  /* White container */
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+    }
+    
+    /* Edit form styling */
+    .edit-form {
+      padding: 20px;
+    }
+    .edit-form h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #003366;
+      border-bottom: 2px solid #e50914;
+      padding-bottom: 10px;
+    }
+    .edit-form label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+      color: #003366;
+    }
+    .edit-form input[type="text"],
+    .edit-form textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      color: #003366;
+      background-color: #f0f0f0;
+    }
+    .edit-form button {
+      display: block;
+      margin: 20px auto 0;
+      padding: 10px 20px;
+      background-color: #040110;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #fff;
+      transition: background-color 0.3s ease;
+    }
+    .edit-form button:hover {
+      background-color: #493b5e;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-section left">
+      <a href="/dashboard">
+        <img src="https://tvsdaksha.com/images/tvs_logo.jpg" alt="TVS Lobo" class="logo-img">
+      </a>
+      <a href="/dashboard" class="home-btn">🏠 Home</a>
+    </div>
+    <div class="topbar-section center">
+      <h1>Edit DID</h1>
+    </div>
+    <div class="topbar-section right">
+      <a href="{{ url_for('admin_dashboard') }}" class="admin-btn">Admin</a>
+      <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+    </div>
+  </div>
+  <div class="container">
+    <div class="edit-form">
+      <form method="POST">
+        <label for="did_value">DID Value</label>
+        <input type="text" id="did_value" name="did_value" value="{{ did[1] }}" required>
+
+        <label for="short_name">Short Name</label>
+        <input type="text" id="short_name" name="short_name" value="{{ did[2] }}" required>
+
+        <label for="description">Description</label>
+        <textarea id="description" name="description" required>{{ did[3] }}</textarea>
+
+        <label for="data_length">Data Length</label>
+        <input type="text" id="data_length" name="data_length" value="{{ did[4] }}" required>
+
+        <label for="data_format">Data Format</label>
+        <input type="text" id="data_format" name="data_format" value="{{ did[5] }}" required>
+
+        <label for="resolution">Resolution</label>
+        <input type="text" id="resolution" name="resolution" value="{{ did[6] }}" required>
+
+        <label for="identification">Identification</label>
+        <input type="text" id="identification" name="identification" value="{{ did[7] }}" required>
+
+        <button type="submit">Save Changes</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

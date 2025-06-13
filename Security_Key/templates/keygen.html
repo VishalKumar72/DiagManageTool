@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Generate Security Key</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* Global Styles */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background-color: #ADD8E6; /* Light blue background matching admin dashboard */
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #003366;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    
+    /* Topbar */
+    .topbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: #87CEFA; /* Sky blue topbar */
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 30px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo img {
+      width: 200px;
+      height: auto;
+    }
+    .logo h1 {
+      font-size: 24px;
+      color: #003366; /* Dark blue to match dashboard */
+    }
+    .topbar h1 {
+      color: #003366;
+      margin: 0;
+      font-size: 22px;
+    }
+    .topbar a {
+      text-decoration: none;
+      color: #10023a;
+      font-weight: bold;
+      font-size: 15px;
+    }
+    .topbar a:hover {
+      color: #e50914;
+    }
+     
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .admin-btn {
+      background-color: #e6eaed;
+      color: #fff;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .logout-btn {
+      background-color: #f5f4f8;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    /* Main container */
+    .main-content {
+      max-width: 600px;
+      margin: 100px auto 30px auto;
+      background-color: #ffffff; /* White container */
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+    }
+    .main-content h2 {
+      margin-top: 0;
+      color: #003366;
+      font-size: 24px;
+      text-align: center;
+      border-bottom: 2px solid #e50914;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    
+    input[type="text"], select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+      color: #003366;
+    }
+    input[type="submit"] {
+      background-color: #05032c;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+    input[type="submit"]:hover {
+      background-color: #b20710;
+    }
+    
+    hr {
+      border: 1px solid #ccc;
+      margin: 40px 0;
+    }
+    
+    .message.success { color: #0f0; }
+    .message.warning { color: rgb(5, 1, 21); }
+    .message.error   { color: #f00; }
+    
+    p strong {
+      color: #00ffff;
+    }
+  </style>
+</head>
+<body>
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="logo">
+        <img src="https://tvsdaksha.com/images/tvs_logo.jpg" alt="TVS Icon" />
+      </div>
+      <a href="/dashboard">Home</a>
+    </div>
+    
+    <div class="topbar-right">
+      <span class="topbar-user">👤 {{ session['email'] }}</span>
+      {% if session['is_admin'] %}
+        <a href="{{ url_for('admin_dashboard') }}" class="admin-btn">Admin</a>
+      {% endif %}
+      <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+    </div>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <h2>Search Security Key</h2>
+    <form method="post">
+      <label>SW Part Number:</label>
+      <input type="text" name="sw_part" maxlength="8" required>
+      <input type="hidden" name="action" value="search">
+      <input type="submit" value="Search Keys">
+    </form>
+    {% if result_type == 'search' %}
+      {% if message %}
+        <p class="message {{ status }}">{{ message }}</p>
+      {% endif %}
+      {% if fixed_code %}
+        <p><strong>Fixed Code:</strong> {{ fixed_code }}</p>
+        <p><strong>Private Key:</strong> {{ private_key }}</p>
+      {% endif %}
+    {% endif %}
+    
+    <hr>
+    
+    <h2>Generate Security Key</h2>
+    <form method="post">
+      <label>Project Code:</label>
+      <input type="text" name="project" required>
+      
+      <label>ECU Name:</label>
+      <select name="ecu" required>
+        <option value="" disabled selected>Select ECU Type</option>
+        <option value="VCU">VCU</option>
+        <option value="CLUSTER">CLUSTER</option>
+        <option value="TELEMATICS">TELEMATICS</option>
+        <option value="ABS">ABS</option>
+        <option value="BMS">BMS</option>
+        <option value="MCU">MCU</option>
+        <option value="IVCU">IVCU</option>
+      </select>
+      
+      <label>SW Part Number:</label>
+      <input type="text" name="sw_part" maxlength="8" required>
+      <input type="hidden" name="action" value="generate">
+      <input type="submit" value="Generate Keys">
+    </form>
+    
+    {% if message %}
+      <p class="message {{ status }}">{{ message }}</p>
+    {% endif %}
+    
+    {% if fixed_code %}
+      <p><strong>Fixed Code:</strong> {{ fixed_code }}</p>
+      <p><strong>Private Key:</strong> {{ private_key }}</p>
+    {% endif %}
+  </div>
+  
+</body>
+</html>

@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Log Analyzer | TVS Diagnostic</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body {
+        min-height: 100vh;
+        margin: 0;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        color: #003366;
+        background: linear-gradient(-45deg, #1190c2 0%, #87cefa 100%);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+      }
+      @keyframes gradientBG {
+        0% {background-position: 0% 50%;}
+        25% {background-position: 50% 100%;}
+        50% {background-position: 100% 50%;}
+        75% {background-position: 50% 0%;}
+        100% {background-position: 0% 50%;}
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 30px;
+        background-color: rgba(135,206,250,0.95);
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .logo img {
+        width: 160px;
+        height: auto;
+        filter: drop-shadow(0 2px 6px #00336655);
+      }
+      .logo a {
+        margin-left: 18px;
+        font-size: 18px;
+        color: #003366;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      .logo a:hover {
+        text-decoration: underline;
+      }
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .topbar-user {
+        font-size: 14px;
+        color: #003366;
+      }
+      .admin-btn, .logout-btn {
+        background-color: #031522;
+        color: #fff;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+      }
+      .admin-btn:hover, .logout-btn:hover {
+        background-color: #002244;
+      }
+      .analyzer-title {
+        text-align: center;
+        margin: 40px 0 20px;
+        font-weight: 700;
+        color: #003366;
+        letter-spacing: 1px;
+        text-shadow: 0 2px 8px #fff, 0 1px 0 #87CEFA;
+      }
+      .card {
+        border-radius: 16px;
+        box-shadow: 0 8px 32px 0 rgba(0,51,102,0.15);
+        background: rgba(255,255,255,0.97);
+        margin-bottom: 28px;
+      }
+      .card-header {
+        border-radius: 16px 16px 0 0;
+      }
+      .btn-success {
+        background-color: #003366;
+        border: none;
+      }
+      .btn-success:hover {
+        background-color: #00509e;
+      }
+      .btn-secondary {
+        background-color: #031522;
+        border: none;
+      }
+      .btn-secondary:hover {
+        background-color: #002244;
+      }
+      .table-wrapper {
+        height: 350px;
+        overflow-y: auto;
+        border-radius: 0 0 16px 16px;
+        background: #fff;
+      }
+      .table th, .table td {
+        vertical-align: middle;
+        text-align: center;
+      }
+      thead.table-primary th {
+        position: sticky;
+        top: 0;
+        background-color: #b0d4ee !important;
+        z-index: 2;
+      }
+      @media (max-width: 800px) {
+        .container { padding: 0 5px; }
+        .col-md-7 { width: 100%; }
+      }
+      @media (max-width: 600px) {
+        .topbar { flex-direction: column; align-items: flex-start; }
+        .logo img { width: 120px; }
+        .analyzer-title { font-size: 1.2rem; }
+        .card { margin-bottom: 18px; }
+      }
+    </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="logo">
+      <img src="https://tvsdaksha.com/images/tvs_logo.jpg" alt="TVS Motor Logo" />
+      <a href="/dashboard">🏠 Home</a>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-user">👤 {{ session['email'] }}</span>
+      {% if session['is_admin'] %}
+        <a href="{{ url_for('admin_dashboard') }}" class="admin-btn">Admin</a>
+      {% endif %}
+      <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+    </div>
+  </div>
+
+  <h2 class="analyzer-title">Log Analyzer</h2>
+  <div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+      <div class="col-md-7">
+
+        <!-- Upload Card -->
+        <div class="card shadow">
+          <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Upload & Analyze Log File</h4>
+          </div>
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <div class="mt-3 px-3">
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endwith %}
+          <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+              <div class="mb-3">
+                <label for="logfile" class="form-label">Select Log File:</label>
+                <input type="file" name="logfile" id="logfile" class="form-control" accept=".trc,.log,.txt" required>
+              </div>
+              <button type="submit" class="btn btn-success w-100 mb-2">Upload & Analyze</button>
+            </form>
+          </div>
+        </div>
+
+        {% if log_table %}
+<div class="card shadow">
+  <div class="card-header bg-secondary text-white">
+    <h5 class="mb-0">Log Table View</h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-wrapper">
+      <table class="table table-bordered table-striped mb-0">
+        <thead class="table-primary">
+          <tr>
+            <th>Message ID</th>
+            <th>Time Offset</th>
+            <th>Type</th>
+            <th>ID</th>
+            <th>Datalen</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for row in log_table %}
+          <tr>
+            <td>{{ row.message_no }}</td>
+            <td>{{ row.time_offset }}</td>
+            <td>{{ row.type }}</td>
+            <td>{{ row.id }}</td>
+            <td>{{ row.datalen }}</td>
+            <td>{{ row.data }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+        <!-- Flashing Sequence Analysis Output Card -->
+        {% if analysis_output %}
+        <div class="card shadow">
+          <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Flashing Sequence Analysis Result</h5>
+          </div>
+          <div class="card-body">
+            <pre style="background: #f4f4f4; border-radius: 8px; max-height: 320px; overflow-y: auto;">{{ analysis_output }}</pre>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- (Optional) Log Analysis Summary Card -->
+        {% if analysis %}
+        <div class="card shadow">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Log Analysis Summary</h5>
+          </div>
+          <div class="card-body">
+            <ul class="mb-3">
+              <li><strong>Total Lines:</strong> {{ analysis.total_lines }}</li>
+              <li><strong>Errors:</strong> {{ analysis.errors|length }}</li>
+              <li><strong>Warnings:</strong> {{ analysis.warnings|length }}</li>
+              <li><strong>Info Lines:</strong> {{ analysis.info|length }}</li>
+            </ul>
+            {% if log_filename %}
+              <a href="{{ url_for('download_log', filename=log_filename) }}" class="btn btn-secondary">Download Log</a>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>
